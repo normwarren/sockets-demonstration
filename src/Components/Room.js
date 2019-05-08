@@ -105,7 +105,7 @@ export default class Room extends Component {
     ))
     return (
       <div className="room">
-        <h2>{this.props.room}</h2>
+        <h2>Room: {this.props.room}</h2>
         <div className="messages">
           {messages}
           {this.state.userTyping && (

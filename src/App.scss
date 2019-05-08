@@ -1,9 +1,19 @@
 $lightGray: #bdbdbd;
 $highlight: #363adb;
 
-.room-list {
-  display: flex;
-  margin-top: 2rem;
+.App {
+  h2 {
+    text-align: center;
+  }
+  .room-list {
+    display: flex;
+    margin-top: 2rem;
+  }
+  
+  .room-joiner {
+    display: flex;
+    justify-content: center;
+  }
 }
 
 .room {

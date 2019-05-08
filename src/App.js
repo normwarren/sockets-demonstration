@@ -6,7 +6,7 @@ class App extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      rooms: [], 
+      rooms: [],
       roomName: ''
     }
   }
@@ -20,7 +20,7 @@ class App extends React.Component {
     })
   }
 
-  handleInput = (e) => {
+  handleInput = e => {
     this.setState({
       [e.target.name]: e.target.value
     })
@@ -30,11 +30,14 @@ class App extends React.Component {
     const rooms = this.state.rooms.map(room => <Room room={room} />)
     return (
       <div className="App">
-      <input type="text" name='roomName' onChange={this.handleInput} />
-      <button onClick={this.joinRoom}>Join Room</button>
-      <div className="room-list">
-        <Room room="global" />
-        {rooms}
+      <h2>Join Room</h2>
+        <div className="room-joiner">
+          <input type="text" name="roomName" onChange={this.handleInput} />
+          <button onClick={this.joinRoom}>Join Room</button>
+        </div>
+        <div className="room-list">
+          <Room room="global" />
+          {rooms}
         </div>
       </div>
     )

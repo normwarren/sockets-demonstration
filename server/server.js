@@ -30,10 +30,18 @@ io.on('connection', socket => {
   })
 
   socket.on('typing', data => {
-    socket.broadcast.emit('typing')
+    if (data.room !== 'global') {
+      socket.to(data.room).broadcast.emit('typing')
+    } else {
+      socket.broadcast.emit('typing')
+    }
   })
 
   socket.on('stopped typing', data => {
+    console.log(data)
+    if (data.room !== 'global') {
+      socket.to(data.room).broadcast.emit('stopped typing')
+    }
     socket.broadcast.emit('stopped typing')
   })
 

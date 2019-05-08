@@ -13,13 +13,26 @@ export default class Room extends Component {
       userTyping: false
     }
     this.socket = io.connect(':4000')
-    this.socket.on('global response', data => {
-      this.updateMessages(data)
-    })
+    this.socket.on('global response', data => this.updateMessages(data))
+    this.socket.on('room response', data => this.updateMessages(data))
+    this.socket.on('typing', () => this.setTyping())
+    this.socket.on('stopped typing', () => this.stopTyping())
+  }
+
+  componentDidMount = () => {
+    if (this.props.room !== 'global') {
+      this.socket.emit('join room', {room: this.props.room})
+    }
   }
 
   handleChange = e => {
-    this.setState({ [e.target.name]: e.target.value })
+    this.setState({ [e.target.name]: e.target.value }, () => {
+      if (this.state.message) {
+        this.socket.emit('typing', { room: this.props.room })
+      } else {
+        this.socket.emit('stopped typing', { room: this.props.room })
+      }
+    })
   }
 
   setUsername = () => {
@@ -30,47 +43,74 @@ export default class Room extends Component {
     }
   }
 
-  updateMessages = message => {
-    const newMessages = this.state.messages.slice()
-    newMessages.push({ message: message.message, username: message.username })
+  setTyping = () => {
+    this.setState({ userTyping: true })
+  }
+
+  stopTyping = () => {
+    this.setState({ userTyping: false })
+  }
+
+  updateMessages = data => {
+    console.log(data)
     this.setState({
-      messages: newMessages
+      messages: [...this.state.messages, {message: data.message, username: data.username}]
     })
   }
 
   broadcast = () => {
-    this.socket.emit(`broadcast to ${this.props.room} socket`, {
-      message: this.state.message,
-      username: this.state.username
-    })
+    this.socket.emit(
+      `broadcast to ${this.props.room !== 'global' ? 'room' : 'global'} socket`,
+      {
+        message: this.state.message,
+        username: this.state.username,
+        room: this.props.room
+      }
+    )
   }
 
   emit = () => {
-    this.socket.emit(`emit to ${this.props.room} socket`, {
-      message: this.state.message,
-      username: this.state.username
-    })
+    this.socket.emit(
+      `emit to ${this.props.room !== 'global' ? 'room' : 'global'} socket`,
+      {
+        message: this.state.message,
+        username: this.state.username,
+        room: this.props.room
+      }
+    )
   }
 
   blast = () => {
-    this.socket.emit(`blast to ${this.props.room} socket`, {
-      message: this.state.message,
-      username: this.state.username
-    })
+    this.socket.emit(
+      `blast to ${this.props.room !== 'global' ? 'room' : 'global'} socket`,
+      {
+        message: this.state.message,
+        username: this.state.username,
+        room: this.props.room
+      }
+    )
   }
 
   render() {
     const messages = this.state.messages.map((message, i) => (
-      <div key={i}>
+      <div
+        key={i}
+        className={
+          message.username === this.state.username ? 'my-message' : 'message'
+        }
+      >
         <h5>{message.username}</h5>
         <p>{message.message}</p>
       </div>
     ))
     return (
       <div className="room">
+        <h2>{this.props.room}</h2>
         <div className="messages">
           {messages}
-          {this.state.userTyping && <h4>User Typing</h4>}
+          {this.state.userTyping && (
+            <h4 className="typing-message">User Typing...</h4>
+          )}
         </div>
         <div className="inputs">
           {this.state.usernameSet ? (
@@ -96,11 +136,11 @@ export default class Room extends Component {
               <input
                 type="text"
                 name="username"
-                placeholder="Username"
+                placeholder="Enter Username"
                 value={this.state.username}
                 onChange={this.handleChange}
               />
-              <button onClick={this.setUsername}>Set Username</button>
+              <button onClick={this.setUsername}>Set</button>
             </div>
           )}
         </div>

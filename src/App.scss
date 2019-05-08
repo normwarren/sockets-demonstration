@@ -1,7 +1,9 @@
 $lightGray: #bdbdbd;
+$highlight: #363adb;
 
-.App {
+.room-list {
   display: flex;
+  margin-top: 2rem;
 }
 
 .room {
@@ -11,16 +13,43 @@ $lightGray: #bdbdbd;
   height: 800px;
   width: 350px;
   border: $lightGray solid;
+  h2 {
+    text-transform: capitalize;
+  }
   .messages {
     height: 80%;
     width: 90%;
     margin: 1rem;
     background: $lightGray;
+    position: relative;
+  }
+  .message {
+    display: flex;
+    justify-content: space-between;
+    margin: .5rem;
+    margin-right: 3rem;
+  }
+  .my-message {
+    @extend .message;
+    flex-direction: row-reverse;
+    margin-right: .5rem;
+    margin-left: 3rem;
+    color: $highlight;
   }
   .welcome-message {
     font-size: 1rem;
   }
   input {
     display: block;
+  }
+  .username-set {
+    display: flex;
+    font-size: 1rem;
+  }
+  .typing-message {
+    position: absolute;
+    text-align: center;
+    width: 100%;
+    bottom: -1rem;
   }
 }

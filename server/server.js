@@ -15,18 +15,44 @@ io.on('connection', socket => {
 
   // GLOBAL SOCKETS
   socket.on('broadcast to global socket', data => {
-    console.log(`broadcast hit`, data)
+    console.log(`global broadcast hit`)
     socket.broadcast.emit('global response',data)
   })
 
   socket.on('emit to global socket', data => {
-    console.log('emit hit', data)
+    console.log('global emit hit')
     socket.emit('global response', data)
   })
 
   socket.on('blast to global socket', data => {
-    console.log('blast hit', data)
+    console.log('global blast hit')
     io.sockets.emit('global response', data)
+  })
+
+  socket.on('typing', data => {
+    socket.broadcast.emit('typing')
+  })
+
+  socket.on('stopped typing', data => {
+    socket.broadcast.emit('stopped typing')
+  })
+
+  // ROOM SOCKETS
+  socket.on('join room', data => {
+    socket.join(data.room)
+  })
+
+  socket.on('broadcast to room socket', data => {
+    console.log(`broadcast to room ${data.room}`)
+    socket.to(data.room).broadcast.emit('room response', data)
+  })
+  socket.on('emit to room socket', data => {
+    console.log(`emit to room ${data.room}`)
+    socket.emit('room response', data)
+  })
+  socket.on('blast to room socket', data => {
+    console.log(`blast to room ${data.room}`)
+    io.to(data.room).emit('room response', data)
   })
 })
 
